@@ -4,7 +4,7 @@ title: Reversal deep-dive
 
 # Reversal deep-dive
 
-The paper's headline finding is that **3 of 96** D.C. Circuit–affirmed *Chevron* step-two rules were later reversed by the issuing agency. After the four design-adherence passes described on the [methodology page](/methods), this pipeline flags **14 reversal-coded amendments across 7 unique affirmed rules** — down from 42 amendments across 22 rules in the permissive first pass. The remaining rule-level gap (7 vs. 3) is substantially explained by the paper's 2024 data cutoff: several of the 7 surviving rules were reversed after the paper's collection window closed.
+The paper's headline finding is that **3 of 96** D.C. Circuit–affirmed *Chevron* step-two rules were later reversed by the issuing agency. After the five design-adherence passes described on the [methodology page](/methods), this pipeline flags **11 reversal-coded amendments across 5 unique affirmed rules** — down from 42 amendments across 22 rules in the permissive first pass. The remaining rule-level gap (5 vs. 3) is substantially explained by the paper's 2024 data cutoff: two of the 5 surviving rules were reversed after the paper's collection window closed.
 
 ```js
 const reversals = await FileAttachment("data/reversals.csv").csv({typed: true});
@@ -67,22 +67,24 @@ Both survived all four tightening passes at high confidence on every step.
   </div>
 </div>
 
-## The five other surviving rules
+## The three other surviving rules
 
-Five rules beyond the paper's named two survived all four tightening passes. Each falls into one of two groups:
+Three rules beyond the paper's named two survived all five tightening passes. They fall into two groups:
 
-**Post-cutoff history (3 rules).** These are reversals that happened after the paper's 2024 data collection window closed, and so could not appear in its data regardless of method.
+**Post-cutoff history (2 rules).** These are reversals that happened after the paper's 2024 data collection window closed, and so could not appear in its data regardless of method.
 
 - **Mozilla Corp v. FCC (2019)** — Reversed by the 2023 NPRM and 2024 final "Safeguarding and Securing the Open Internet" orders, reclassifying broadband as a Title II telecommunications service. Conf 0.93–0.97.
 - **Home Care Ass'n v. Weil (2015)** — Reversed by the Department of Labor's 2025 proposal to return to the 1975 Fair Labor Standards Act regulations covering domestic service workers. Conf 0.87.
-- **(The 2024 Safeguarding and 2025 "Delete, Delete, Delete" orders also attach to USTA v. FCC above.)**
 
-**Within-cutoff borderline calls (2 rules).** These are rules where the paper and the pipeline could in principle disagree on whether the subsequent amendment is "wholly inconsistent" or only "significantly modifies":
+**Within-cutoff borderline call (1 rule).** One rule where the paper and the pipeline could in principle disagree on whether the subsequent amendment is "wholly inconsistent" or only "significantly modifies":
 
-- **American Equity v. SEC (2009), Rule 151A.** The SEC withdrew the rule in October 2010 after the D.C. Circuit vacated parts of it on APA grounds. The withdrawal is a reversal of the affirmed interpretation, though an agency-compelled one. The paper's 3-of-96 count may or may not include it.
 - **White Stallion v. EPA (2014), MATS mercury rule.** The pipeline flags the EPA's 2019 reproposal and 2020 final finding that it is "not appropriate and necessary" to regulate mercury emissions from coal- and oil-fired power plants — a repudiation of the original 2012 finding the D.C. Circuit upheld. The 2022–2023 re-reversal (EPA rescinding the 2020 finding) did *not* survive the wholly-inconsistent verifier; only the original 2019–2020 flip did.
 
-## All seven surviving reversed rules
+<div class="note small">
+A permissive first pass flagged two additional rules — <em>American Equity v. SEC</em> (Rule 151A) and <em>SEC Rule 151A</em> — that did not survive the tightening. On re-review, <em>American Equity</em> turned out to be a Stage 1 classifier error: the D.C. Circuit actually <strong>vacated</strong> the rule in 2009, rather than affirming it at step two. The SEC's 2010 withdrawal was a post-vacatur formality, not a reversal of an affirmed interpretation. A targeted vacatur-check classifier (Pass 5 in Methods) caught this and dropped the rule from the affirmed set, which in turn dropped the 2010 "reversal" that had been attached to it. That correction is the main reason the surviving count moved from 7 rules to 5.
+</div>
+
+## All five surviving reversed rules
 
 ```js
 Inputs.table(reversed_rules, {
@@ -111,13 +113,14 @@ Inputs.table(reversed_rules, {
 })
 ```
 
-## All 14 surviving reversal-coded amendments
+## All 11 surviving reversal-coded amendments
 
 Each row below is an amendment that:
 
 1. passed the original nine-category classification as `reversal`,
-2. passed the subsection-aware re-coding pass (with the specific affirmed subsection as explicit context), and
-3. passed the dedicated wholly-inconsistent binary verifier at confidence ≥ 0.7.
+2. passed the subsection-aware re-coding pass (with the specific affirmed subsection as explicit context),
+3. passed the dedicated wholly-inconsistent binary verifier at confidence ≥ 0.7, and
+4. is attached to an affirmed rule that survived the vacatur-check pass.
 
 ```js
 Inputs.table(reversals_linked, {
@@ -155,8 +158,8 @@ Inputs.table(reversals_linked, {
 
 <div class="note">
 
-The paper's qualitative thesis — that *Chevron*-affirmed rules are overwhelmingly not reversed, and that the "whiplash narrative" overstates agency reversal behavior — is reinforced by this replication. Of 36,021 subsequent Federal Register amendments pulled, 99% were coded `unrelated_amendment` after tightening. Of 118 confirmed affirmances over 20 years, only 7 saw any reversal-coded amendment that survived all four design passes — a 6% rate, against the paper's reported 3% (3/96). Subtracting the three post-2024 reversals the paper's window necessarily excludes brings the pipeline to 4 within-window rules (plus two borderlines), within the range the paper's method would plausibly produce.
+The paper's qualitative thesis — that *Chevron*-affirmed rules are overwhelmingly not reversed, and that the "whiplash narrative" overstates agency reversal behavior — is reinforced by this replication. Of 36,021 subsequent Federal Register amendments pulled, 99% were coded `unrelated_amendment` after tightening. Of 114 confirmed affirmances over 20 years, only 5 saw any reversal-coded amendment that survived all five design passes — a 4.4% rate, against the paper's reported 3% (3/96). Subtracting the two post-2024 reversals the paper's window necessarily excludes brings the pipeline to 3 within-window rules (two paper-named, one borderline), within the range the paper's method would plausibly produce.
 
-The quantitative lesson for computational method: the gap between the pipeline's permissive first pass (22 rules) and its tightened output (7 rules) is a measurement, not a failure. It shows exactly where the paper's dual-review workflow does its work — at step-one/step-two borderlines and at the "wholly inconsistent" threshold for reversal. Those are the coding decisions where legal judgment carries weight, and they are the decisions a single-pass classifier cannot reliably reproduce without the review architecture the paper supplies.
+The quantitative lesson for computational method: the gap between the pipeline's permissive first pass (22 rules) and its tightened output (5 rules) is a measurement, not a failure. It shows where the paper's dual-review workflow does its work — at step-one/step-two borderlines, at the "wholly inconsistent" threshold for reversal, and at data-integrity corrections like catching a vacated rule miscoded as affirmed. Those are the coding decisions where legal judgment carries weight, and they are the decisions a single-pass classifier cannot reliably reproduce without the review architecture the paper supplies.
 
 </div>

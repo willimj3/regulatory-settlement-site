@@ -1,11 +1,11 @@
 category,count,is_reversal
-reversal,14,yes
+reversal,12,yes
 significant_modification,15,no
-new_application,77,no
+new_application,66,no
 additional_factor,5,no
 clarification,11,no
-technical_correction,152,no
-revised_date,89,no
+technical_correction,145,no
+revised_date,84,no
 revised_paperwork,54,no
 no_revisions,0,no
-unrelated_amendment,35604,no
+unrelated_amendment,30328,no

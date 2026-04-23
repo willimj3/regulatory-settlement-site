@@ -21,6 +21,7 @@ A complete re-run from scratch — no cached data, fresh CourtListener pull, fre
 | 4a. Dual-pass opinion confirmation | ~2 min | Batches API: 158 affirmance candidates re-reviewed by a stricter second classifier. 22 dropped on disagreement. |
 | 4b. Subsection-aware amendment recoding | ~3 min | Batches API: 4,124 non-unrelated amendments re-coded with the specific affirmed subsection as context. 22 reversals moved to non-reversal categories. |
 | 4c. Wholly-inconsistent verifier | ~4 min | Sequential: 29 reversal candidates re-fetched from Federal Register and run through a dedicated binary test. 15 downgraded to a new `significant_modification` category. |
+| 4d. Docket dedup + vacatur check | ~1 min | Secondary dedup by `(docket, date_filed)` catches CourtListener duplicate cluster indexing; targeted vacatur-check classifier over the 7 opinions with reversal amendments attached. Caught one Stage 1 mis-classification (American Equity v. SEC, 2009, was actually vacated) and flipped it. |
 
 Two things matter here:
 
@@ -82,7 +83,7 @@ Reinforced with the paper's "nature vs. effect" distinction: "Changing an effect
 
 Each Stage 1 call sends the ~500-token classifier template plus the varying opinion text. Each Stage 2 call sends the ~1,000-token classifier template plus the varying rule summary and amendment text. The repeated static portions are marked with `cache_control: {"type": "ephemeral"}` so that Anthropic can serve the cached prefix at ~10% of full price on repeat calls.
 
-On Sonnet 4.6 the minimum cacheable prefix is 2,048 tokens. The current Stage 1 template is under this threshold, so prompt caching does not activate on Stage 1 today — but the structure is in place, and adding few-shot examples (per the iteration notes in `prompts.md`) would push the prefix over the threshold and start paying out. Stage 2's longer prefix is closer to the threshold and likely caches across the 22 rules' worth of amendments.
+On Sonnet 4.6 the minimum cacheable prefix is 2,048 tokens. The current Stage 1 and Stage 2 templates are both under this threshold — the Stage 2 template sits at roughly 325 tokens before the first varying placeholder — so prompt caching does not meaningfully activate today. The `cache_control` marker is in place on the static portion of both prompts, and adding few-shot examples (per the iteration notes in `prompts.md`) or moving the `{{AFFIRMED_RULE_SUMMARY}}` placeholder to later in the Stage 2 template would push the prefix over the threshold and start paying out, but neither has been done yet.
 
 ## Replication recipe
 

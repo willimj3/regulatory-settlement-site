@@ -23,7 +23,7 @@ Each opinion is sent to a Claude classifier prompt that mirrors the paper's incl
   <li>Extracted: <code>cfr_citation</code>, <code>federal_register_citation</code>, <code>agency</code>, <code>rule_short_name</code>, and a 2–3 sentence <code>reasoning</code> field.</li>
 </ul>
 
-Kept if both booleans are true and confidence ≥ 0.6, deduped by cluster. First-pass result: **136 affirmances.** After the dual-reviewer confirmation pass described below: **118 affirmances.**
+Kept if both booleans are true and confidence ≥ 0.6, deduped by cluster. First-pass result: **136 affirmances.** After the dual-reviewer confirmation pass described below, plus a docket-level secondary dedup that catches legitimate CourtListener double-indexing and a vacatur-check pass over rules with later reversal-coded amendments: **114 affirmances.**
 
 **Named-case validation.** All three cases the paper highlights for Stage 1 validation are correctly classified in both passes:
 
@@ -41,6 +41,10 @@ For each of the 96 rules, the paper pulled every subsequent Federal Register doc
 
 This pipeline makes the equivalent query against the Federal Register API: for each of 136 first-pass affirmed rules, fetch every FR document that touches the same CFR part(s) with publication date ≥ the affirmance date. **36,021 documents.** Each passes through a second classifier using the paper's nine categories, verbatim. Permissive first-pass result: **42 reversal-coded amendments across 22 unique affirmed rules.**
 
+<div class="note small">
+A note on the CFR-part query: it over-collects by design — any amendment touching the same CFR part as an affirmed rule is pulled, whether or not it touches the specific subsection the court affirmed. The paper's Stage 2 taxonomy is built to absorb this through the <code>unrelated_amendment</code> category. Our subsection-aware recoding pass (Pass 3 below) tightens the collection further by passing the affirmed subsection explicitly to the classifier. That pass's effectiveness, however, depends on the opinion classifier having extracted a specific subsection (e.g., <code>42 C.F.R. § 411.357(b)(4)</code>) rather than only a part number (e.g., <code>47 C.F.R. pts. 73, 74</code>). Where only a part was extracted, the recoder receives no subsection constraint and the pass degrades to a stricter version of the nine-category prompt. This affects roughly 40% of the affirmed rules.
+</div>
+
 ## Four design-adherence passes
 
 The 22-vs-3 gap is exactly the kind of divergence a single-pass LLM classifier produces. It over-flags at borderlines because no one is overruling its first impression. The paper's coding workflow does not have this failure mode — it has two coders seeing the same material, a deliberately strict reversal threshold, and a review session for discrepancies. Those features are the paper's *design*, not just its *sources*. To test whether the pipeline could match them in form, four additional passes were layered on top of the first-pass output.
@@ -55,14 +59,19 @@ Each pass is implemented in <code>tighten.py</code> in the pipeline directory; t
 
 **Pass 3 — Subsection-aware amendment recoding.** The paper's coders read each amendment against the *specific affirmed provision*, not just the CFR part. In the pipeline this translates to passing the opinion classifier's extracted subsection(s) — e.g., `42 C.F.R. § 411.357(b)(4)(ii)(B)` rather than `42 CFR 411` — as explicit context to a second, stricter amendment classifier, along with the instruction that amendments not touching the affirmed subsection default to `unrelated_amendment`. Run over the 4,124 non-unrelated amendments from pass 1. **22 reversal-coded amendments moved to non-reversal categories; 29 remained as reversal candidates.**
 
-**Pass 4 — Dedicated wholly-inconsistent verifier.** The paper's reversal definition — "adoption of a wholly inconsistent interpretive or legal position" — is deliberately strict. A dedicated binary classifier was run over each of the 29 surviving reversal candidates, presenting the affirmed interpretation text and the amendment text side-by-side and asking only whether the amendment is wholly inconsistent with the affirmed position on the question the court addressed. 15 of the 29 did not meet the bar and were downgraded to a new `significant_modification` category (recast, narrowed, or added exceptions but did not repudiate the prior interpretation). **14 reversal-coded amendments survived all four passes, across 7 unique affirmed rules.**
+**Pass 4 — Dedicated wholly-inconsistent verifier.** The paper's reversal definition — "adoption of a wholly inconsistent interpretive or legal position" — is deliberately strict. A dedicated binary classifier was run over each of the 29 surviving reversal candidates, presenting the affirmed interpretation text and the amendment text side-by-side and asking only whether the amendment is wholly inconsistent with the affirmed position on the question the court addressed. 15 of the 29 did not meet the bar and were downgraded to a new `significant_modification` category (recast, narrowed, or added exceptions but did not repudiate the prior interpretation).
+
+**Pass 5 — Docket dedup + vacatur check.** Two data-integrity corrections applied before final reporting. First, CourtListener occasionally indexes the same legal decision under two cluster IDs (observed for Mozilla Corp v. FCC and two other cases); a secondary dedup pass collapses any pair sharing docket number and filing date to the record with the higher classifier score, so each legal decision counts once. Second, a targeted vacatur-check classifier runs over every opinion that has at least one reversal-coded amendment attached, asking specifically whether the court affirmed the rule at step two or vacated/remanded it. That pass caught *American Equity v. SEC* (2009), which the opinion classifier had miscoded as a step-two affirmance but which the D.C. Circuit actually vacated — flipping it to non-affirmance drops its spurious "reversal" from the count.
+
+**Final: 11 reversal-coded amendments survived all passes, across 5 unique affirmed rules.**
 
 | Pass | Rule count | Reversal-coded amendments | Unique reversed rules |
 |---|---|---|---|
 | 0. Permissive first pass | 136 | 42 | 22 |
 | + Dual-reviewer confirmation | 118 | 42 | 22 |
 | + Subsection-aware recoding | 118 | 29 | 11 |
-| + Wholly-inconsistent verifier | 118 | **14** | **7** |
+| + Wholly-inconsistent verifier | 118 | 14 | 7 |
+| + Docket dedup + vacatur check | 114 | **11** | **5** |
 | Paper (Bressman & Stack) | 96 | — | 3 |
 
 ## Data sources
@@ -88,11 +97,11 @@ Each pass is implemented in <code>tighten.py</code> in the pipeline directory; t
 ## Code and data
 
 <ul class="download-list">
-  <li><a href="data/cases.csv" download>cases.csv</a> — 118 affirmed rules (dual-pass confirmed)</li>
-  <li><a href="data/cases-all.csv" download>cases-all.csv</a> — all 908 classified clusters</li>
-  <li><a href="data/amendments.csv" download>amendments.csv</a> — all 36,021 coded amendments, final categories (21 MB)</li>
-  <li><a href="data/reversals.csv" download>reversals.csv</a> — 14 reversal-coded amendments surviving all four passes</li>
-  <li><a href="data/reversed_rules.csv" download>reversed_rules.csv</a> — 7 unique affirmed rules with at least one surviving reversal</li>
+  <li><a href="data/cases.csv" download>cases.csv</a> — 114 affirmed rules (all five tightening passes applied)</li>
+  <li><a href="data/cases-all.csv" download>cases-all.csv</a> — all 871 unique legal decisions (deduped)</li>
+  <li><a href="data/amendments.csv" download>amendments.csv</a> — 30,720 unique amendments after docket dedup</li>
+  <li><a href="data/reversals.csv" download>reversals.csv</a> — 11 reversal-coded amendments surviving all passes</li>
+  <li><a href="data/reversed_rules.csv" download>reversed_rules.csv</a> — 5 unique affirmed rules with at least one surviving reversal</li>
   <li><a href="data/category_summary.csv" download>category_summary.csv</a> — aggregate counts by category</li>
 </ul>
 

@@ -31,8 +31,10 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
 
     # --- load opinions, attach cluster_id from source files ---
-    # Prefer the tightened (dual-pass confirmed) file when present.
-    op_path = SRC / "data" / "classified_opinions_tight.jsonl"
+    # Prefer the fully-verified file (vacatur check applied) > tight > raw.
+    op_path = SRC / "data" / "classified_opinions_verified.jsonl"
+    if not op_path.exists():
+        op_path = SRC / "data" / "classified_opinions_tight.jsonl"
     if not op_path.exists():
         op_path = SRC / "data" / "classified_opinions.jsonl"
     records = [json.loads(l) for l in op_path.read_text().splitlines()]
@@ -40,6 +42,9 @@ def main():
         # Always read the source opinion JSON so we can carry cluster_id AND the
         # absolute_url. CourtListener's WAF rejects opinion URLs without the
         # case-name slug, so we need the full absolute_url to link out reliably.
+        # Also pull docket and case_name for the secondary dedup below —
+        # CourtListener occasionally indexes the same opinion under two cluster
+        # IDs (seen for Mozilla Corp v. FCC, docket 18-1051, 2019-10-01).
         src = SRC / "data" / "opinions" / (str(rec["id"]) + ".json")
         if src.exists():
             try:
@@ -48,6 +53,7 @@ def main():
                     rec["cluster_id"] = op_raw.get("cluster_id")
                 if not rec.get("absolute_url"):
                     rec["absolute_url"] = op_raw.get("absolute_url") or ""
+                rec["docket"] = op_raw.get("docket") or rec.get("docket") or ""
             except Exception:
                 pass
 
@@ -57,6 +63,29 @@ def main():
         if cid not in by_cluster or score(r) > score(by_cluster[cid]):
             by_cluster[cid] = r
     deduped = list(by_cluster.values())
+
+    # Secondary dedup: CourtListener has indexed some opinions under two
+    # different cluster IDs (observed: Mozilla Corp v. FCC, docket 18-1051).
+    # When two clusters share docket+filing-date, collapse to the one with the
+    # best classifier score so each legal decision counts once. Also build a
+    # remap so amendments attached to the "dropped" cluster can be pointed at
+    # the surviving one; otherwise they inflate reversal counts.
+    groups: dict = {}
+    for r in deduped:
+        docket = (r.get("docket") or "").strip()
+        date_filed = r.get("date_filed") or ""
+        if docket and date_filed:
+            key = ("docket", docket, date_filed)
+        else:
+            key = ("id", r.get("id"))
+        groups.setdefault(key, []).append(r)
+    deduped = []
+    opinion_remap: dict = {}  # raw opinion_id -> surviving opinion_id
+    for key, recs in groups.items():
+        best = max(recs, key=score)
+        deduped.append(best)
+        for r in recs:
+            opinion_remap[r.get("id")] = best.get("id")
 
     case_cols = [
         "id", "cluster_id", "absolute_url", "case_name", "date_filed", "year", "confidence",
@@ -104,6 +133,22 @@ def main():
     if not amend_path.exists():
         amend_path = SRC / "data" / "classified_amendments.jsonl"
     amendments = [json.loads(l) for l in amend_path.read_text().splitlines()]
+    # Apply the opinion_remap so amendments attached to a dropped-cluster
+    # Mozilla twin are routed to the surviving cluster; then dedup amendments
+    # by (origin_opinion_id, document_number) so the same FR document doesn't
+    # count twice under two origin IDs that really represent one case.
+    seen_am: set = set()
+    deduped_amendments: list = []
+    for a in amendments:
+        new_origin = opinion_remap.get(a.get("origin_opinion_id"), a.get("origin_opinion_id"))
+        a["origin_opinion_id"] = new_origin
+        doc = (a.get("amendment_key") or "").split("__")[-1]
+        key = (new_origin, doc)
+        if key in seen_am:
+            continue
+        seen_am.add(key)
+        deduped_amendments.append(a)
+    amendments = deduped_amendments
     opinions_by_id = {r["id"]: r for r in records}
 
     amend_cols = [
@@ -134,7 +179,16 @@ def main():
     print(f"amendments.csv: {len(amendments)} rows")
 
     # --- reversals subset ---
-    reversals = [a for a in amendments if a.get("is_reversal") or a.get("category") == "reversal"]
+    # Only count as a reversal if the origin opinion is still in the confirmed
+    # affirmed set; if the vacatur check dropped it (e.g., American Equity v.
+    # SEC, where the D.C. Cir. actually vacated the rule), a subsequent
+    # "reversal" of that never-really-affirmed rule is not meaningful.
+    affirmed_ids = {r["id"] for r in affirmed}
+    reversals = [
+        a for a in amendments
+        if (a.get("is_reversal") or a.get("category") == "reversal")
+        and a.get("origin_opinion_id") in affirmed_ids
+    ]
     with (OUT / "reversals.csv").open("w", newline="") as f:
         w = csv.writer(f)
         w.writerow(amend_cols + ["origin_confidence"])

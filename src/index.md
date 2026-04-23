@@ -27,7 +27,7 @@ This is a demonstration, not a study. The paper is the authority on the underlyi
     <div class="stat-label"><em>Chevron</em>-citing D.C. Cir. opinions<br><span>2004-01-01 · 2024-01-02</span></div>
   </div>
   <div class="stat">
-    <div class="stat-number">118</div>
+    <div class="stat-number">114</div>
     <div class="stat-label">Step-two affirmances of N&amp;C rules<br><span>paper: 96</span></div>
   </div>
   <div class="stat">
@@ -35,14 +35,14 @@ This is a demonstration, not a study. The paper is the authority on the underlyi
     <div class="stat-label">Subsequent FR amendments, coded<br><span>one coding pass, then a stricter recode</span></div>
   </div>
   <div class="stat accent">
-    <div class="stat-number">7</div>
+    <div class="stat-number">5</div>
     <div class="stat-label">Rules later reversed by the agency<br><span>paper: 3</span></div>
   </div>
 </div>
 
-Both of the D.C. Circuit reversals named in the paper — **USTA v. FCC** (the 2015 Open Internet Order, reversed by the 2017–2018 Restoring Internet Freedom orders) and **APSCU v. Duncan** (the Department of Education's Gainful Employment rule, rescinded in 2019) — were recovered at high classifier confidence. The five other reversed rules the pipeline flagged include three post-cutoff reversals the paper's 2024 data window necessarily excludes (the FCC's 2024 Safeguarding the Open Internet order; the Department of Labor's 2025 proposal to return to the 1975 home-care regulations; the FCC's 2025 "Delete, Delete, Delete" follow-up) and two within-window borderline cases (the SEC's 2010 withdrawal of Rule 151A after judicial vacatur; the EPA's 2019–2020 flip on the "appropriate and necessary" finding for coal- and oil-fired power plants).
+Both of the D.C. Circuit reversals named in the paper — **USTA v. FCC** (the 2015 Open Internet Order, reversed by the 2017–2018 Restoring Internet Freedom orders) and **APSCU v. Duncan** (the Department of Education's Gainful Employment rule, rescinded in 2019) — were recovered at high classifier confidence. The three other reversed rules the pipeline flagged include two post-cutoff reversals the paper's 2024 data window necessarily excludes (the FCC's 2023–2024 Safeguarding the Open Internet orders, via Mozilla Corp v. FCC; the Department of Labor's 2025 proposal to return to the 1975 home-care regulations, via Home Care Ass'n v. Weil) and one within-window borderline case: the EPA's 2019–2020 flip on the "appropriate and necessary" finding for coal- and oil-fired power plants, via White Stallion v. EPA (MATS).
 
-The pipeline's qualitative finding matches the paper's: agency reversal of *Chevron*-affirmed interpretations is uncommon. Of 118 affirmed rules, only 7 saw any reversal-coded amendment that survived the final verification pass; 99% of the 36,021 pulled amendments were coded `unrelated_amendment` — the paper's taxonomy category for Federal Register activity that touches the same CFR part as an affirmed rule but not the affirmed provision itself.
+The pipeline's qualitative finding matches the paper's: agency reversal of *Chevron*-affirmed interpretations is uncommon. Of 114 affirmed rules, only 5 saw any reversal-coded amendment that survived all verification and dedup passes; 99% of the 36,021 pulled amendments were coded `unrelated_amendment` — the paper's taxonomy category for Federal Register activity that touches the same CFR part as an affirmed rule but not the affirmed provision itself.
 
 ## Amendment category distribution
 
@@ -100,7 +100,7 @@ Plot.plot({
   </a>
   <a href="/explore/cases" class="nav-card">
     <div class="nav-card-label">Data</div>
-    <div class="nav-card-title">Affirmed rules (118)</div>
+    <div class="nav-card-title">Affirmed rules (114)</div>
     <div class="nav-card-desc">Filterable table of every step-two affirmance the pipeline identified, with the classifier's full reasoning on each case.</div>
   </a>
   <a href="/explore/amendments" class="nav-card">
