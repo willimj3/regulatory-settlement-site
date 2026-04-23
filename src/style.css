@@ -1,0 +1,506 @@
+/* regulatory-settlement-site — academic legal replication demo.
+   Type pairing: Source Serif Pro (body) + system sans (UI/headings).
+   Accent is a deep oxblood for legal-scholarly visual register. */
+
+:root {
+  --accent: #7a2c2c;
+  --accent-deep: #5c1e1e;
+  --accent-soft: #f5ece9;
+  --ink: #1a1a1a;
+  --rule: rgba(0, 0, 0, 0.08);
+  --serif: "Source Serif Pro", "Charter", "Iowan Old Style", Georgia, serif;
+}
+
+.observablehq-root,
+body {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, h5, h6,
+#observablehq-sidebar,
+#observablehq-header,
+.observablehq-header,
+.observablehq-footer,
+nav, .observablehq-pager {
+  font-family: var(--sans-serif);
+  letter-spacing: -0.005em;
+}
+
+main h1 {
+  letter-spacing: -0.018em;
+  line-height: 1.1;
+  font-weight: 700;
+  margin-top: 0.1em;
+  margin-bottom: 0.6rem;
+}
+main h2 {
+  letter-spacing: -0.012em;
+  font-weight: 650;
+  margin-top: 2.2rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--rule);
+}
+main h3 {
+  letter-spacing: -0.008em;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+main h1 + p:first-of-type,
+main h1 + blockquote:first-of-type {
+  font-size: 1.1em;
+  color: var(--theme-foreground-muted);
+}
+
+main p, main li {
+  line-height: 1.6;
+}
+
+code {
+  font-size: 0.9em;
+}
+
+/* ─────────────────────────── Hero (landing) ─────────────────────────── */
+.hero {
+  padding: 3rem 0 1rem;
+  border-top: 4px solid var(--accent);
+  margin: 1rem 0 2rem;
+}
+.hero-eyebrow {
+  font-family: var(--sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: var(--theme-foreground-muted);
+  margin-bottom: 0.7rem;
+}
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4.2vw, 2.6rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  color: var(--ink);
+  max-width: 28ch;
+  margin-bottom: 0.6rem;
+}
+.hero-title em {
+  color: var(--accent-deep);
+  font-style: italic;
+}
+.hero-sub {
+  font-family: var(--sans-serif);
+  font-size: 0.95rem;
+  color: var(--theme-foreground-muted);
+}
+.hero-sub a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #ececec; --rule: rgba(255,255,255,0.08); }
+  .hero-title em { color: #e8a0a0; }
+}
+
+/* ─────────────────────────── Winnowing grid (landing) ─────────────────────────── */
+.winnow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.8rem;
+  margin: 1.5rem 0 2rem;
+}
+.winnow-card {
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--theme-background-alt);
+  position: relative;
+}
+.winnow-card.accent {
+  border-color: var(--accent);
+  border-width: 2px;
+  background: var(--accent-soft);
+}
+@media (prefers-color-scheme: dark) {
+  .winnow-card.accent { background: rgba(200, 120, 120, 0.08); }
+}
+.winnow-label {
+  font-family: var(--sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  color: var(--theme-foreground-muted);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.winnow-card.accent .winnow-label {
+  color: var(--accent-deep);
+}
+.winnow-number {
+  font-family: var(--sans-serif);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+}
+.winnow-card.accent .winnow-number {
+  color: var(--accent);
+}
+.winnow-number span {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--theme-foreground-muted);
+  letter-spacing: 0;
+  margin-left: 0.25rem;
+}
+.winnow-detail {
+  font-family: var(--sans-serif);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--theme-foreground);
+}
+
+/* ─────────────────────────── Stats row (landing) ─────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 2rem;
+  margin: 2rem 0 3rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.stat {
+  padding: 0.4rem 0;
+}
+.stat-number {
+  font-family: var(--sans-serif);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.stat.accent .stat-number {
+  color: var(--accent);
+}
+.stat-label {
+  font-family: var(--sans-serif);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--theme-foreground);
+}
+.stat-label span {
+  color: var(--theme-foreground-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+/* ─────────────────────────── Nav cards (landing) ─────────────────────────── */
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+.nav-card {
+  display: block;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  text-decoration: none;
+  color: inherit;
+  background: var(--theme-background-alt);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.nav-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.nav-card-label {
+  font-family: var(--sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.nav-card-title {
+  font-family: var(--serif);
+  font-size: 1.18rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--ink);
+}
+.nav-card-desc {
+  font-family: var(--sans-serif);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--theme-foreground-muted);
+}
+
+/* ─────────────────────────── Citation block ─────────────────────────── */
+.cite-block {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 1rem 1.2rem;
+  margin: 2rem 0 1rem;
+  font-size: 0.92rem;
+}
+.cite-label {
+  font-family: var(--sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  color: var(--accent-deep);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+@media (prefers-color-scheme: dark) {
+  .cite-block { background: rgba(200,120,120,0.08); }
+}
+
+/* ─────────────────────────── Memo header ─────────────────────────── */
+.memo-header {
+  font-family: var(--sans-serif);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin: 1rem 0 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.memo-header strong {
+  display: inline-block;
+  width: 4.5em;
+  color: var(--theme-foreground-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.82rem;
+}
+
+/* ─────────────────────────── Callouts ─────────────────────────── */
+.note {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 0.9rem 1.2rem;
+  margin: 1.5rem 0;
+}
+.note.small { font-size: 0.88rem; }
+.note p:first-child { margin-top: 0; }
+.note p:last-child { margin-bottom: 0; }
+@media (prefers-color-scheme: dark) {
+  .note { background: rgba(200, 120, 120, 0.08); }
+}
+
+/* ─────────────────────────── Cards (general) ─────────────────────────── */
+.card {
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--theme-background-alt);
+}
+.card h2 {
+  font-family: var(--sans-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.3rem 0;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  border: none;
+  padding: 0;
+}
+.card h3 {
+  margin-top: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.card h3 a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.card h3 a:hover { text-decoration: underline; }
+.card p { margin: 0; line-height: 1.5; font-size: 0.9rem; }
+
+/* ─────────────────────────── Case cards (findings) ─────────────────── */
+.case-card {
+  border-left: 3px solid var(--accent);
+  padding: 0.3rem 1.3rem 1rem;
+  margin: 2rem 0;
+}
+.case-card h3 {
+  margin-top: 0.6em;
+  margin-bottom: 0.6em;
+  font-family: var(--sans-serif);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  font-size: 0.82rem;
+  font-family: var(--sans-serif);
+  color: var(--theme-foreground-muted);
+  margin-bottom: 0.4rem;
+}
+.case-tag {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  padding: 0.15rem 0.6rem;
+  border-radius: 2px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+@media (prefers-color-scheme: dark) {
+  .case-tag { background: rgba(200, 140, 140, 0.18); color: #e8bcbc; }
+}
+.case-excerpt {
+  border-left: 2px solid var(--theme-foreground-faint);
+  padding-left: 0.9rem;
+  margin: 0.8rem 0 0;
+  font-style: italic;
+  color: var(--theme-foreground-muted);
+  font-size: 0.94rem;
+}
+.case-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px dotted var(--theme-foreground-faint);
+  font-family: var(--sans-serif);
+  font-size: 0.85rem;
+}
+.case-links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.case-links a:hover {
+  text-decoration: underline;
+}
+
+/* ─────────────────────────── Explore pages ─────────────────────────── */
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem 1rem;
+  margin: 1rem 0 0.5rem;
+}
+.result-count {
+  margin: 1rem 0 0.5rem;
+  color: var(--theme-foreground-muted);
+  font-family: var(--sans-serif);
+  font-size: 0.92rem;
+}
+.result-count strong {
+  color: var(--accent);
+  font-size: 1.1em;
+}
+.detail-card {
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  padding: 1rem 1.3rem;
+  margin-top: 1rem;
+  background: var(--theme-background-alt);
+}
+.detail-card h3 {
+  margin-top: 0;
+  font-family: var(--sans-serif);
+  font-weight: 600;
+  font-size: 1.08rem;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.35rem 1rem;
+  font-family: var(--sans-serif);
+  font-size: 0.88rem;
+  margin: 0.6rem 0;
+  padding: 0.6rem 0;
+  border-top: 1px dotted var(--theme-foreground-faint);
+  border-bottom: 1px dotted var(--theme-foreground-faint);
+}
+.detail-section {
+  margin: 0.6rem 0;
+  line-height: 1.5;
+}
+.detail-excerpt {
+  border-left: 2px solid var(--accent);
+  padding-left: 0.9rem;
+  margin: 0.6rem 0;
+  font-style: italic;
+  color: var(--theme-foreground-muted);
+}
+.detail-hint {
+  color: var(--theme-foreground-muted);
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+/* ─────────────────────────── Misc ─────────────────────────── */
+.download-list {
+  list-style: none;
+  padding-left: 0;
+}
+.download-list li {
+  padding: 0.4rem 0;
+  border-bottom: 1px dotted var(--theme-foreground-faint);
+}
+.download-list li a {
+  font-family: var(--monospace);
+  font-size: 0.88em;
+  color: var(--accent);
+}
+
+main table {
+  font-size: 0.92em;
+}
+
+/* Tighter Observable Inputs table in the main flow */
+main [value] table {
+  font-family: var(--sans-serif);
+}
+
+/* Make external-source links (CourtListener opinions, Federal Register
+   documents) visibly clickable wherever they appear — including inside
+   Observable Inputs.table cells, where the default theme strips underlines.
+   Using href attribute selectors so this is independent of table DOM structure. */
+main a[href*="courtlistener.com"],
+main a[href*="federalregister.gov/d"] {
+  color: var(--accent) !important;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(122, 44, 44, 0.45) !important;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.1s ease;
+}
+main a[href*="courtlistener.com"]:hover,
+main a[href*="federalregister.gov/d"]:hover {
+  text-decoration-color: var(--accent) !important;
+  text-decoration-thickness: 2px !important;
+}
+@media (prefers-color-scheme: dark) {
+  main a[href*="courtlistener.com"],
+  main a[href*="federalregister.gov/d"] {
+    color: #e8a0a0 !important;
+    text-decoration-color: rgba(232, 160, 160, 0.5) !important;
+  }
+  main a[href*="courtlistener.com"]:hover,
+  main a[href*="federalregister.gov/d"]:hover {
+    text-decoration-color: #e8a0a0 !important;
+  }
+}

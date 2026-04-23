@@ -1,0 +1,25 @@
+# Node / build artifacts
+node_modules/
+dist/
+.cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment / secrets — never commit API keys
+.env
+.env.local
+.env.*.local
+*.env
+
+# Local pipeline scratch (regenerable)
+pipeline/data/
+pipeline/outputs/
+pipeline/*.log
+
+# Anything that looks like a token
+**/token*.txt
+**/secrets.json

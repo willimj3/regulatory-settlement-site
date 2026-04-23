@@ -1,0 +1,8 @@
+origin_opinion_id,case_name,date_filed,agency,rule_short_name,reversal_count,first_reversal_date,max_confidence,confidence_origin
+3212871,United States Telecom Ass'n v. Federal Communications Commission,2016-06-14,Federal Communications Commission,2015 Open Internet Order (Net Neutrality / Broadband Reclassification Rule),4,2017-06-02,0.97,0.92
+2669957,"White Stallion Energy Center, LLC v. Environmental Protection Agency",2014-04-15,Environmental Protection Agency,Mercury and Air Toxics Standards (MATS) for Coal- and Oil-Fired Electric Utility Steam Generating Units,2,2019-02-07,0.95,0.85
+4443143,Mozilla Corporation v. FCC,2019-10-01,Federal Communications Commission,Restoring Internet Freedom Order – broadband Internet access as information service,2,2023-11-03,0.97,0.92
+4444319,Mozilla Corporation v. FCC,2019-10-01,Federal Communications Commission,Restoring Internet Freedom Order — broadband information service classification,2,2023-11-03,0.97,0.85
+8679466,Ass'n of Private Sector Colleges & Universities v. Duncan,2016-03-08,Department of Education,Gainful Employment Rule (2014),2,2018-08-14,0.95,0.92
+187420,American Equity Investment Life Insurance v. Securities & Exchange Commission,2009-07-21,Securities and Exchange Commission,SEC Rule 151A (Fixed Indexed Annuities Rule),1,2010-10-20,0.85,0.93
+2829583,Home Care Association v. David Weil,2015-08-21,Department of Labor,Home Care Third-Party Employer Companionship and Live-In Worker Exemption Rule,1,2025-07-02,0.97,0.97

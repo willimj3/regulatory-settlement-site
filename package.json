@@ -1,0 +1,13 @@
+{
+  "name": "regulatory-settlement-site",
+  "version": "1.0.0",
+  "description": "Computational replication of Bressman & Stack (2025), Regulatory Settlement, Stare Decisis, and Loper Bright.",
+  "type": "module",
+  "scripts": {
+    "dev": "observable preview",
+    "build": "observable build"
+  },
+  "dependencies": {
+    "@observablehq/framework": "^1.13.4"
+  }
+}
